@@ -1,10 +1,9 @@
-import * as React from 'react'
 import { Outlet, createRootRoute } from '@tanstack/react-router'
 
 export const Route = createRootRoute({
   component: () => (
-    <React.Fragment>
+    <div className='container mx-auto p-4'>
       <Outlet />
-    </React.Fragment>
+    </div>
   ),
 })
