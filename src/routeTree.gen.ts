@@ -12,12 +12,18 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as ReportIndexImport } from './routes/report/index'
 import { Route as ExpensesCreateImport } from './routes/expenses/create'
 
 // Create/Update Routes
 
 const IndexRoute = IndexImport.update({
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ReportIndexRoute = ReportIndexImport.update({
+  path: '/report/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -44,6 +50,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExpensesCreateImport
       parentRoute: typeof rootRoute
     }
+    '/report/': {
+      id: '/report/'
+      path: '/report'
+      fullPath: '/report'
+      preLoaderRoute: typeof ReportIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -52,36 +65,41 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/expenses/create': typeof ExpensesCreateRoute
+  '/report': typeof ReportIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/expenses/create': typeof ExpensesCreateRoute
+  '/report': typeof ReportIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/expenses/create': typeof ExpensesCreateRoute
+  '/report/': typeof ReportIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/expenses/create'
+  fullPaths: '/' | '/expenses/create' | '/report'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/expenses/create'
-  id: '__root__' | '/' | '/expenses/create'
+  to: '/' | '/expenses/create' | '/report'
+  id: '__root__' | '/' | '/expenses/create' | '/report/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExpensesCreateRoute: typeof ExpensesCreateRoute
+  ReportIndexRoute: typeof ReportIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExpensesCreateRoute: ExpensesCreateRoute,
+  ReportIndexRoute: ReportIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,7 +115,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/expenses/create"
+        "/expenses/create",
+        "/report/"
       ]
     },
     "/": {
@@ -105,6 +124,9 @@ export const routeTree = rootRoute
     },
     "/expenses/create": {
       "filePath": "expenses/create.tsx"
+    },
+    "/report/": {
+      "filePath": "report/index.tsx"
     }
   }
 }

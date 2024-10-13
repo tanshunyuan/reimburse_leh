@@ -6,10 +6,11 @@ import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "~/components/ui/select"
 import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
+import { ArrowLeftIcon, CalendarIcon } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover"
 import { cn } from "~/lib/utils"
 import { Calendar } from "~/components/ui/calendar"
+import { Link } from "@tanstack/react-router"
 const formSchema = z.object({
   incurredDate: z.date(),
   from: z.string(),
@@ -41,7 +42,12 @@ export const CreateExpensePage = () => {
   }
 
   return <>
-    <h3 className="text-xl mb-2">Fill in your expenses</h3>
+    <div className="mb-2 flex items-center">
+      <Link to="/">
+        <Button size='sm' variant='ghost'><ArrowLeftIcon className="h-5 w-5" /></Button>
+      </Link>
+      <h3 className="text-xl">Fill in your expenses</h3>
+    </div>
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-3">
         <FormField
