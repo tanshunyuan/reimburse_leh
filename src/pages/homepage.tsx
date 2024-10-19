@@ -1,9 +1,10 @@
 import { Button } from "~/components/ui/button"
 import { PlusIcon } from "lucide-react"
 import { Link } from "@tanstack/react-router"
+import { MainLayout } from "~/components/layout"
 
 export const HomePage = () => {
-  return <div>
+  return <MainLayout>
     <div>
       <Link to="/expenses/create">
         <Button size='sm'>
@@ -11,5 +12,5 @@ export const HomePage = () => {
         </Button>
       </Link>
     </div>
-  </div>
+  </MainLayout>
 }

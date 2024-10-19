@@ -1,3 +1,5 @@
+import { MainLayout } from "~/components/layout"
+
 export const ViewReportsPage = () => {
-  return <div>Hello /report/!</div>
+  return <MainLayout>Hello /report/!</MainLayout>
 }
