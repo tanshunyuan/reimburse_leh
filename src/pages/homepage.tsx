@@ -2,26 +2,23 @@ import { Button } from "~/components/ui/button"
 import { PlusIcon } from "lucide-react"
 import { Link, useNavigate } from "@tanstack/react-router"
 import { MainLayout } from "~/components/layout"
-import { supabase } from "~/utils/client"
-import { useEffect, useState } from "react"
 import { Badge } from "~/components/ui/badge"
 import { formatDate } from "~/utils/date"
+import { api } from "~/api"
 
 export const HomePage = () => {
-  const [expenses, setExpenses] = useState<[]>([])
   const navigate = useNavigate({ from: '/' })
 
-  const getExpenses = async () => {
-    const results = await supabase.from('expenses').select('*')
-    setExpenses(results.data)
-  }
-  useEffect(() => {
-    getExpenses()
-  })
+  const {data, isLoading, isError} = api.expenses.useGetAllExpenses()
+
   const handleDetails = (id: string) => {
     console.log('henlo ==> ', id)
     navigate({to: `/expenses/$expenseId`, params: { expenseId: id }})
   }
+
+  if(isLoading) return <p>Loading...</p>
+  if(isError) return <p>Error!</p>
+
   return <MainLayout>
     <div>
       <Link to="/expenses/create">
@@ -31,7 +28,7 @@ export const HomePage = () => {
       </Link>
     </div>
     <div>
-      {expenses.map((expense, index) => 
+      {data && data.map((expense, index) => 
       <div className="flex justify-between w-3/6 px-6 py-4 border cursor-pointer rounded-2xl" key={index} onClick={() => handleDetails(expense.id)}>
         <div>
           <p className="text-lg">{expense.from} to {expense.to}</p>

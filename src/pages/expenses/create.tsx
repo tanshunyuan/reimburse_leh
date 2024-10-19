@@ -13,6 +13,7 @@ import { Calendar } from "~/components/ui/calendar"
 import { Link } from "@tanstack/react-router"
 import { supabase } from "~/utils/client"
 import { useState } from "react"
+import { api } from "~/api"
 const formSchema = z.object({
   incurredDate: z.date(),
   from: z.string().min(3),
@@ -23,10 +24,10 @@ const formSchema = z.object({
     .instanceof(FileList)
     .refine((file) => file?.length == 1, 'File is required.')
 })
-type FormSchema = z.infer<typeof formSchema>
+export type CreateExpenseSchema = z.infer<typeof formSchema>
 
 export const CreateExpensePage = () => {
-  const form = useForm<FormSchema>({
+  const form = useForm<CreateExpenseSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       incurredDate: new Date(),
@@ -38,59 +39,23 @@ export const CreateExpensePage = () => {
     }
   })
   const attachmentRef = form.register("attachment");
-  const [uploading, setUploading] = useState(false)
+  
+  const createExpenseMutation = api.expenses.useCreateExpenseMutation()
 
-  const handleAttachmentUpload = async (item: FileList) => {
-    try {
-      setUploading(true)
-
-      const file = item[0]
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${Math.random()}.${fileExt}`
-      const filePath = `${fileName}`
-
-      const { error: uploadError, data } = await supabase.storage.from('expenses-media').upload(filePath, file)
-
-      if (uploadError) {
-        throw uploadError
+  const onSubmit = async (data: CreateExpenseSchema) => {
+    createExpenseMutation.mutate(data, {
+      onSuccess: (data) => {
+        console.log('Successfully created expense!', data)
+      },
+      onError: (error) => {
+        console.log('Error creating expense!', error)
       }
-
-      return data.fullPath
-
-    } catch (error) {
-      alert(error.message)
-    } finally {
-      setUploading(false)
-    }
+    })
   }
 
-  const onSubmit = async (data: FormSchema) => {
-    console.log(data.attachment)
-
-    try {
-      const imagePath = await handleAttachmentUpload(data.attachment)
-      const uploadUrl = await supabase
-        .storage
-        .from('expenses-media')
-        .getPublicUrl(imagePath)
-
-      await supabase.from('expenses').insert({
-        amount: data.amount,
-        from: data.from,
-        to: data.to,
-        status: data.status,
-        attachment: uploadUrl.data.publicUrl,
-        exp_date: data.incurredDate
-      })
-
-    } catch (error) {
-
-      console.log(error)
-    }
-
-  }
 
   return <>
+    {createExpenseMutation.isPending && <p>Submitting...</p>}
     <div className="flex items-center mb-2">
       <Link to="/">
         <Button size='sm' variant='ghost'><ArrowLeftIcon className="w-5 h-5" /></Button>
