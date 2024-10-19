@@ -14,6 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
 import { Route as ReportIndexImport } from './routes/report/index'
 import { Route as ExpensesCreateImport } from './routes/expenses/create'
+import { Route as ExpensesExpenseIdIndexImport } from './routes/expenses/$expenseId/index'
 
 // Create/Update Routes
 
@@ -29,6 +30,11 @@ const ReportIndexRoute = ReportIndexImport.update({
 
 const ExpensesCreateRoute = ExpensesCreateImport.update({
   path: '/expenses/create',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ExpensesExpenseIdIndexRoute = ExpensesExpenseIdIndexImport.update({
+  path: '/expenses/$expenseId/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -57,6 +63,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReportIndexImport
       parentRoute: typeof rootRoute
     }
+    '/expenses/$expenseId/': {
+      id: '/expenses/$expenseId/'
+      path: '/expenses/$expenseId'
+      fullPath: '/expenses/$expenseId'
+      preLoaderRoute: typeof ExpensesExpenseIdIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -66,12 +79,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/expenses/create': typeof ExpensesCreateRoute
   '/report': typeof ReportIndexRoute
+  '/expenses/$expenseId': typeof ExpensesExpenseIdIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/expenses/create': typeof ExpensesCreateRoute
   '/report': typeof ReportIndexRoute
+  '/expenses/$expenseId': typeof ExpensesExpenseIdIndexRoute
 }
 
 export interface FileRoutesById {
@@ -79,14 +94,20 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/expenses/create': typeof ExpensesCreateRoute
   '/report/': typeof ReportIndexRoute
+  '/expenses/$expenseId/': typeof ExpensesExpenseIdIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/expenses/create' | '/report'
+  fullPaths: '/' | '/expenses/create' | '/report' | '/expenses/$expenseId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/expenses/create' | '/report'
-  id: '__root__' | '/' | '/expenses/create' | '/report/'
+  to: '/' | '/expenses/create' | '/report' | '/expenses/$expenseId'
+  id:
+    | '__root__'
+    | '/'
+    | '/expenses/create'
+    | '/report/'
+    | '/expenses/$expenseId/'
   fileRoutesById: FileRoutesById
 }
 
@@ -94,12 +115,14 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ExpensesCreateRoute: typeof ExpensesCreateRoute
   ReportIndexRoute: typeof ReportIndexRoute
+  ExpensesExpenseIdIndexRoute: typeof ExpensesExpenseIdIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExpensesCreateRoute: ExpensesCreateRoute,
   ReportIndexRoute: ReportIndexRoute,
+  ExpensesExpenseIdIndexRoute: ExpensesExpenseIdIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -116,7 +139,8 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/expenses/create",
-        "/report/"
+        "/report/",
+        "/expenses/$expenseId/"
       ]
     },
     "/": {
@@ -127,6 +151,9 @@ export const routeTree = rootRoute
     },
     "/report/": {
       "filePath": "report/index.tsx"
+    },
+    "/expenses/$expenseId/": {
+      "filePath": "expenses/$expenseId/index.tsx"
     }
   }
 }
