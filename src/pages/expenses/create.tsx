@@ -11,8 +11,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover
 import { cn } from "~/lib/utils"
 import { Calendar } from "~/components/ui/calendar"
 import { Link } from "@tanstack/react-router"
-import { supabase } from "~/utils/client"
-import { useState } from "react"
 import { api } from "~/api"
 const formSchema = z.object({
   incurredDate: z.date(),

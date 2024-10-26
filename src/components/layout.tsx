@@ -16,10 +16,8 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
       <NavigationMenuList>
         {NAV_ITEMS.map((item, index) => (
           <NavigationMenuItem key={index}>
-            <Link to={item.href}>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                {item.name}
-              </NavigationMenuLink>
+            <Link to={item.href} className={navigationMenuTriggerStyle()}>
+              {item.name}
             </Link>
           </NavigationMenuItem>
         ))}

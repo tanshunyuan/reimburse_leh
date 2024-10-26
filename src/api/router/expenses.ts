@@ -40,8 +40,6 @@ const useCreateExpenseMutation = () => {
       .from('expenses-media')
       .getPublicUrl(uploadResult?.path)
 
-    console.log({ uploadUrl, uploadResult})
-
     await supabase.from('expenses').insert({
       amount: data.amount,
       from: data.from,
