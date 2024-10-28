@@ -11,118 +11,146 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as IndexImport } from './routes/index'
-import { Route as ReportIndexImport } from './routes/report/index'
-import { Route as ExpensesCreateImport } from './routes/expenses/create'
-import { Route as ExpensesExpenseIdIndexImport } from './routes/expenses/$expenseId/index'
+import { Route as AuthedImport } from './routes/_authed'
+import { Route as AuthedIndexImport } from './routes/_authed/index'
+import { Route as AuthedReportIndexImport } from './routes/_authed/report/index'
+import { Route as AuthedExpensesCreateImport } from './routes/_authed/expenses/create'
+import { Route as AuthedExpensesExpenseIdIndexImport } from './routes/_authed/expenses/$expenseId/index'
 
 // Create/Update Routes
 
-const IndexRoute = IndexImport.update({
+const AuthedRoute = AuthedImport.update({
+  id: '/_authed',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthedIndexRoute = AuthedIndexImport.update({
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => AuthedRoute,
 } as any)
 
-const ReportIndexRoute = ReportIndexImport.update({
+const AuthedReportIndexRoute = AuthedReportIndexImport.update({
   path: '/report/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => AuthedRoute,
 } as any)
 
-const ExpensesCreateRoute = ExpensesCreateImport.update({
+const AuthedExpensesCreateRoute = AuthedExpensesCreateImport.update({
   path: '/expenses/create',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => AuthedRoute,
 } as any)
 
-const ExpensesExpenseIdIndexRoute = ExpensesExpenseIdIndexImport.update({
-  path: '/expenses/$expenseId/',
-  getParentRoute: () => rootRoute,
-} as any)
+const AuthedExpensesExpenseIdIndexRoute =
+  AuthedExpensesExpenseIdIndexImport.update({
+    path: '/expenses/$expenseId/',
+    getParentRoute: () => AuthedRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_authed': {
+      id: '/_authed'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthedImport
+      parentRoute: typeof rootRoute
+    }
+    '/_authed/': {
+      id: '/_authed/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthedIndexImport
+      parentRoute: typeof AuthedImport
     }
-    '/expenses/create': {
-      id: '/expenses/create'
+    '/_authed/expenses/create': {
+      id: '/_authed/expenses/create'
       path: '/expenses/create'
       fullPath: '/expenses/create'
-      preLoaderRoute: typeof ExpensesCreateImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthedExpensesCreateImport
+      parentRoute: typeof AuthedImport
     }
-    '/report/': {
-      id: '/report/'
+    '/_authed/report/': {
+      id: '/_authed/report/'
       path: '/report'
       fullPath: '/report'
-      preLoaderRoute: typeof ReportIndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthedReportIndexImport
+      parentRoute: typeof AuthedImport
     }
-    '/expenses/$expenseId/': {
-      id: '/expenses/$expenseId/'
+    '/_authed/expenses/$expenseId/': {
+      id: '/_authed/expenses/$expenseId/'
       path: '/expenses/$expenseId'
       fullPath: '/expenses/$expenseId'
-      preLoaderRoute: typeof ExpensesExpenseIdIndexImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof AuthedExpensesExpenseIdIndexImport
+      parentRoute: typeof AuthedImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface AuthedRouteChildren {
+  AuthedIndexRoute: typeof AuthedIndexRoute
+  AuthedExpensesCreateRoute: typeof AuthedExpensesCreateRoute
+  AuthedReportIndexRoute: typeof AuthedReportIndexRoute
+  AuthedExpensesExpenseIdIndexRoute: typeof AuthedExpensesExpenseIdIndexRoute
+}
+
+const AuthedRouteChildren: AuthedRouteChildren = {
+  AuthedIndexRoute: AuthedIndexRoute,
+  AuthedExpensesCreateRoute: AuthedExpensesCreateRoute,
+  AuthedReportIndexRoute: AuthedReportIndexRoute,
+  AuthedExpensesExpenseIdIndexRoute: AuthedExpensesExpenseIdIndexRoute,
+}
+
+const AuthedRouteWithChildren =
+  AuthedRoute._addFileChildren(AuthedRouteChildren)
+
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/expenses/create': typeof ExpensesCreateRoute
-  '/report': typeof ReportIndexRoute
-  '/expenses/$expenseId': typeof ExpensesExpenseIdIndexRoute
+  '': typeof AuthedRouteWithChildren
+  '/': typeof AuthedIndexRoute
+  '/expenses/create': typeof AuthedExpensesCreateRoute
+  '/report': typeof AuthedReportIndexRoute
+  '/expenses/$expenseId': typeof AuthedExpensesExpenseIdIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/expenses/create': typeof ExpensesCreateRoute
-  '/report': typeof ReportIndexRoute
-  '/expenses/$expenseId': typeof ExpensesExpenseIdIndexRoute
+  '/': typeof AuthedIndexRoute
+  '/expenses/create': typeof AuthedExpensesCreateRoute
+  '/report': typeof AuthedReportIndexRoute
+  '/expenses/$expenseId': typeof AuthedExpensesExpenseIdIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/expenses/create': typeof ExpensesCreateRoute
-  '/report/': typeof ReportIndexRoute
-  '/expenses/$expenseId/': typeof ExpensesExpenseIdIndexRoute
+  '/_authed': typeof AuthedRouteWithChildren
+  '/_authed/': typeof AuthedIndexRoute
+  '/_authed/expenses/create': typeof AuthedExpensesCreateRoute
+  '/_authed/report/': typeof AuthedReportIndexRoute
+  '/_authed/expenses/$expenseId/': typeof AuthedExpensesExpenseIdIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/expenses/create' | '/report' | '/expenses/$expenseId'
+  fullPaths: '' | '/' | '/expenses/create' | '/report' | '/expenses/$expenseId'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/expenses/create' | '/report' | '/expenses/$expenseId'
   id:
     | '__root__'
-    | '/'
-    | '/expenses/create'
-    | '/report/'
-    | '/expenses/$expenseId/'
+    | '/_authed'
+    | '/_authed/'
+    | '/_authed/expenses/create'
+    | '/_authed/report/'
+    | '/_authed/expenses/$expenseId/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ExpensesCreateRoute: typeof ExpensesCreateRoute
-  ReportIndexRoute: typeof ReportIndexRoute
-  ExpensesExpenseIdIndexRoute: typeof ExpensesExpenseIdIndexRoute
+  AuthedRoute: typeof AuthedRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  ExpensesCreateRoute: ExpensesCreateRoute,
-  ReportIndexRoute: ReportIndexRoute,
-  ExpensesExpenseIdIndexRoute: ExpensesExpenseIdIndexRoute,
+  AuthedRoute: AuthedRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -137,23 +165,33 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
-        "/expenses/create",
-        "/report/",
-        "/expenses/$expenseId/"
+        "/_authed"
       ]
     },
-    "/": {
-      "filePath": "index.tsx"
+    "/_authed": {
+      "filePath": "_authed.tsx",
+      "children": [
+        "/_authed/",
+        "/_authed/expenses/create",
+        "/_authed/report/",
+        "/_authed/expenses/$expenseId/"
+      ]
     },
-    "/expenses/create": {
-      "filePath": "expenses/create.tsx"
+    "/_authed/": {
+      "filePath": "_authed/index.tsx",
+      "parent": "/_authed"
     },
-    "/report/": {
-      "filePath": "report/index.tsx"
+    "/_authed/expenses/create": {
+      "filePath": "_authed/expenses/create.tsx",
+      "parent": "/_authed"
     },
-    "/expenses/$expenseId/": {
-      "filePath": "expenses/$expenseId/index.tsx"
+    "/_authed/report/": {
+      "filePath": "_authed/report/index.tsx",
+      "parent": "/_authed"
+    },
+    "/_authed/expenses/$expenseId/": {
+      "filePath": "_authed/expenses/$expenseId/index.tsx",
+      "parent": "/_authed"
     }
   }
 }
